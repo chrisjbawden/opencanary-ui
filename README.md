@@ -4,9 +4,11 @@
 
 Simple GUI for the <a href="">opencanary project</a>.
 
+---
+
 
 <div align="center">
-  <img src="https://github.com/chrisjbawden/cockpit-dockermanager/blob/main/misc/45634534573.png" alt="DockerManager Interface" style="width:70%; margin:auto;" />
+  <img src="https://github.com/chrisjbawden/opencanary-ui/blob/main/misc/35345346.png" alt="O-UI Interface" style="width:70%; margin:auto;" />
 </div>
 
 
