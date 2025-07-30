@@ -2,7 +2,7 @@
 
 # Summary
 
-Simple GUI for the <a href="">opencanary project</a>.
+Simple GUI for the <a href="https://github.com/thinkst/opencanary" target="_blank">opencanary project</a>.
 
 ---
 
