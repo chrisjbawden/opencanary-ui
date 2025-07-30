@@ -20,9 +20,12 @@ Simple GUI for the <a href="">opencanary project</a>.
    1.1 Open a browser, target the host IP and the port you set in step 1.
 2. Open a browser, target the host IP with the default port 8501
 3. Log in using the default credentials -
+   <br>
       U: admin
+   <br>
       P: admin
-
+<br>
+<br>
 Note: to change the password, go settings > change password.
 
 ---
