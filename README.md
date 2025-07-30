@@ -23,6 +23,7 @@ docker run -d \
   -v [directory on host]/app:/app \
   --network host \
   --name opencanary \
+  -e man_port=8001 \
   --cap-add NET_ADMIN \
   --restart unless-stopped \
   --cap-add NET_RAW \
