@@ -57,7 +57,7 @@ echo "[start] launching OpenCanary daemon"
 opencanaryd --start -f > /dev/null 2>&1 &
 
 # 7) Determine port from env or default to 8501
-PORT="${STREAMLIT_PORT:-8501}"
+PORT="${man_port:-8501}"
 
 # 8 Pick bind address: use BIND_ADDR if provided, else 0.0.0.0
 ADDRESS="${BIND_ADDR:-0.0.0.0}"
