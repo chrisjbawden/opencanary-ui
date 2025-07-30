@@ -14,6 +14,19 @@ Simple GUI for the <a href="">opencanary project</a>.
 
 <hr>
 
+## Access
+
+1. If you provided a port with environment variables MAN_PORT=?
+   1.1 Open a browser, target the host IP and the part you set in step 1.
+2. Open a browser, target the host IP with the default port 8501
+3. Log in using the default credentials -
+      U: admin
+      P: admin
+
+Note: to change the password, go settings > change password.
+
+---
+
 ## Deployment
 
 Docker run:
