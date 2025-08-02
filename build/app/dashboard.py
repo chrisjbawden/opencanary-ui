@@ -203,3 +203,4 @@ def render_dashboard():
     if len(logs) > st.session_state.show_logs:
         if st.button("Show more logs", key="show_more_logs_button", use_container_width=True):
             st.session_state.show_logs += 10
+            st.rerun()
