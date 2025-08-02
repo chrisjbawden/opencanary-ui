@@ -7,7 +7,7 @@ from typing import Any, Optional
 CONFIG_PATH    = "/etc/opencanaryd/opencanary.conf"
 LOG_PATH       = "/var/tmp/opencanary.log"
 BACKUP_DIR     = "/app/backups"
-SETTINGS_FILE  = "settings.conf"
+SETTINGS_FILE  = "/app/settings.conf"
 
 def read_text(path: str) -> str:
     if not os.path.exists(path):
