@@ -15,6 +15,12 @@ if [ ! -f /app/credentials.json ]; then
 EOF
 fi
 
+# 2.5) remove this to allow for the portscan functionality
+
+if [ -f "/.dockerenv" ]; then
+    rm -f "/.dockerenv"
+fi
+
 # 3) If no opencanary config yet, then create it
 if [ ! -f /etc/opencanaryd/opencanary.conf ]; then
   echo "[init] generating default opencanary.conf via opencanaryd"
