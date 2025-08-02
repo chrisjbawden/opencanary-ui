@@ -39,7 +39,7 @@ def render_dashboard():
 
     try:
         ps = subprocess.run(
-            ["pgrep", "-f", "portscan_mod"],
+            ["pgrep", "-f", "portscan_patch.sh"],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL
         )
