@@ -1,11 +1,11 @@
-# .github/workflows/github-release.yml
-name: Create or Replace GitHub Release
+# .github/workflows/force-release-replace.yml
+name: Force Replace GitHub Release and Tag
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag (e.g., v1.0.3)'
+        description: 'Release tag (e.g., v1.0.2)'
         required: true
       release_name:
         description: 'Release title'
@@ -13,23 +13,54 @@ on:
       body:
         description: 'Release notes'
         required: false
+      commit:
+        description: 'Commit SHA to tag (default: HEAD)'
+        required: false
 
 jobs:
-  release:
+  force_release_replace:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed to push tags
+
+      - name: Set variables
+        id: vars
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          COMMIT="${{ github.event.inputs.commit }}"
+          if [ -z "$COMMIT" ]; then
+            COMMIT="HEAD"
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
 
       - name: Delete existing release (if any)
         run: |
-          gh release delete "${{ github.event.inputs.tag }}" --yes || true
+          gh release delete "${{ steps.vars.outputs.tag }}" --yes || true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete remote tag (if any)
+        run: |
+          git push origin ":refs/tags/${{ steps.vars.outputs.tag }}" || true
+
+      - name: Delete local tag (if exists)
+        run: |
+          git tag -d "${{ steps.vars.outputs.tag }}" || true
+
+      - name: Create tag at target commit
+        run: |
+          git tag "${{ steps.vars.outputs.tag }}" "${{ steps.vars.outputs.commit }}"
+          git push origin "${{ steps.vars.outputs.tag }}"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event.inputs.tag }}
+          tag_name: ${{ steps.vars.outputs.tag }}
           name: ${{ github.event.inputs.release_name }}
           body: ${{ github.event.inputs.body }}
         env:
