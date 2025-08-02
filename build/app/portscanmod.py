@@ -67,7 +67,6 @@ def main():
     print(f"[*] Using detected interface: {INTERFACE}")
     print(f"[*] Detected host IP: {HOST_IP}")
     print(f"[*] Starting tcpdump... Simulating iptables logs to {KERNLOG_PATH}")
-    print(f"[*] You may need sudo/root. Press Ctrl+C or send SIGTERM to stop.")
 
     while not terminate:
         try:
