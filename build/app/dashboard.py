@@ -37,9 +37,20 @@ def render_dashboard():
     except Exception:
         al_status = "❌"
 
+    try:
+        ps = subprocess.run(
+            ["pgrep", "-f", "portscan_mod"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        ps_status = "✅" if ps.returncode == 0 else "❌"
+    except Exception:
+        ps_status = "❌"
+
     st.write("**OpenCanary:**", oc_status)
     st.write("**rsyslog:**",   rs_status)
     st.write("**alerting system:**",   al_status)
+    st.write("**portscan mod:**",   ps_status)
 
 
     # ─── Handle centered→wide one‑time rerun ────────────────────────────────────
@@ -49,29 +60,48 @@ def render_dashboard():
 
     st.write("---")
 
-    # ─── Refresh button ─────────────────────────────────────────────────────────
-    col1, col2 = st.columns([4, 1])
-    with col2:
-        if st.button("Refresh Logs", key="refresh", use_container_width=True):
-            st.rerun()
-
     # ─── Load and parse logs ────────────────────────────────────────────────────
     raw = read_text(LOG_PATH)
     if not raw:
         return st.info(f"No logs at {LOG_PATH}")
 
+    # ─── Filter bar + Search/Refresh ────────────────────────────────────────────
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        query = st.text_input(
+            "Filter logs (use -substring to exclude)",
+            value="-888 -1001",  # Default: exclude logtype 888 and 1001
+            key="filter"
+        )
+    with col2:
+        st.markdown('<div style="padding-top:27px;"></div>', unsafe_allow_html=True)
+        if st.button("Search/Refresh", key="search_refresh", use_container_width=True):
+            st.rerun()
+
+    # ─── Filter parsing ─────────────────────────────────────────────────────────
+    include_patterns = []
+    exclude_patterns = []
+    for part in query.split():
+        if part.startswith("-") and len(part) > 1:
+            exclude_patterns.append(part[1:].lower())
+        elif part:
+            include_patterns.append(part.lower())
+
+    # ─── Entries for Graph (filtered) ───────────────────────────────────────────
     entries = []
     for line in raw.splitlines():
+        text = line.lower()
+        # Must match ALL includes (if set) and NONE of the excludes
+        if include_patterns and not any(p in text for p in include_patterns):
+            continue
+        if any(e in text for e in exclude_patterns):
+            continue
         try:
             obj = json.loads(line)
-            lt = obj.get("logtype")
-            if lt in (1001, 888):
-                continue
-            # only use the container’s local timestamp (Brisbane time)
             ts = obj.get("local_time_adjusted")
             entries.append({
                 "timestamp": pd.to_datetime(ts),
-                "logtype":   lt
+                "logtype": obj.get("logtype")
             })
         except (json.JSONDecodeError, TypeError, ValueError):
             continue
@@ -115,38 +145,25 @@ def render_dashboard():
     with st.expander("Activity over last 6 hours", expanded=True):
         chart = (
             alt.Chart(df)
-               .mark_line(point=True)
-               .encode(
-                   x=alt.X("timestamp:T", axis=alt.Axis(title=None)),
-                   y=alt.Y("count:Q",    axis=alt.Axis(title=None)),
-                   tooltip=[
-                       alt.Tooltip("timestamp", type="temporal",     title="Time"),
-                       alt.Tooltip("count",     type="quantitative", title="Events"),
-                   ]
-               )
-               .properties(height=200)
+            .mark_line(point=True)
+            .encode(
+                x=alt.X("timestamp:T", axis=alt.Axis(title=None)),
+                y=alt.Y("count:Q",    axis=alt.Axis(title=None)),
+                tooltip=[
+                    alt.Tooltip("timestamp", type="temporal",     title="Time"),
+                    alt.Tooltip("count",     type="quantitative", title="Events"),
+                ]
+            )
+            .properties(height=200)
         )
         st.altair_chart(chart, use_container_width=True)
 
     st.write("---")
 
-    # ─── Log viewer ──────────────────────────────────────────────────────────────
-    query = st.text_input("Filter logs (use -substring to exclude)", key="filter")
-    hide_1001 = st.checkbox("Hide logtype 1001", value=True)
-
-    # Split query into positive and negative patterns
-    include_patterns = []
-    exclude_patterns = []
-    for part in query.split():
-        if part.startswith("-") and len(part) > 1:
-            exclude_patterns.append(part[1:].lower())
-        elif part:
-            include_patterns.append(part.lower())
-
+    # ─── Log viewer (single event expanders, filtered the same as above) ────────
     lines = []
     for l in raw.splitlines():
         text = l.lower()
-        # Must match ALL includes (if set) and NONE of the excludes
         if include_patterns and not any(p in text for p in include_patterns):
             continue
         if any(e in text for e in exclude_patterns):
@@ -160,8 +177,6 @@ def render_dashboard():
     for line in tail:
         try:
             entry = json.loads(line)
-            if hide_1001 and entry.get("logtype") == 1001:
-                continue
             logs.append(entry)
         except json.JSONDecodeError:
             continue
