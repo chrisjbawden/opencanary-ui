@@ -216,7 +216,7 @@ def render_settings():
                  alt="Bird icon"/>
             <div style="font-size: 0.9em;">View on GitHub</div>
           </a>
-          <p>V1.0.1</p>
+          <p>V1.0.3</p>
         </div>
         """,
         unsafe_allow_html=True,
