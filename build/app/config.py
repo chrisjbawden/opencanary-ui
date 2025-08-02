@@ -155,14 +155,7 @@ def render_config():
 
         # ─── Portscan ──────────────────────────────────────────────────────────────
         ps_enabled = st.checkbox("Enable portscan", value=initial["portscan.enabled"], key="cfg_ps_en")
-        if ps_enabled:
-            ignore_local = st.checkbox(
-                "Ignore localhost",
-                value=initial["portscan.ignore_localhost"],
-                key="cfg_ps_ignore"
-            )
-        else:
-            ignore_local = initial["portscan.ignore_localhost"]
+
 
         # ─── FTP ──────────────────────────────────────────────────────────────────
         ftp_enabled = st.checkbox("Enable FTP honeypot", value=initial["ftp.port"] is not None, key="cfg_ftp_en")
@@ -228,7 +221,6 @@ def render_config():
                 cfg.pop("https.port", None)
 
             cfg["portscan.enabled"]          = ps_enabled
-            cfg["portscan.ignore_localhost"] = ignore_local
 
             if ftp_enabled:
                 cfg["ftp.port"]   = st.session_state.cfg_ftp_port
