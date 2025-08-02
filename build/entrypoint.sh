@@ -7,15 +7,7 @@ if [ -z "$(ls -A /app 2>/dev/null)" ]; then
   cp -a /opt/streamlit/. /app/
 fi
 
-# If no credentials yet, seed them
-if [ ! -f /app/credentials.json ]; then
-  echo "[init] creating blank credentials.json"
-  cat > /app/credentials.json <<'EOF'
-{"username": "admin", "password": "admin"}
-EOF
-fi
-
-# remove this to allow for the portscan functionality
+# to allow for the portscan functionality within container
 
 if [ -f "/.dockerenv" ]; then
     rm -f "/.dockerenv"
