@@ -1,5 +1,5 @@
 # .github/workflows/force-release-replace.yml
-name: Force Replace GitHub Release and Tag
+name: Publish (replace) GitHub Release and Tag
 
 on:
   workflow_dispatch:
@@ -12,9 +12,6 @@ on:
         required: false
       body:
         description: 'Release notes'
-        required: false
-      commit:
-        description: 'Commit SHA to tag (default: HEAD)'
         required: false
 
 jobs:
