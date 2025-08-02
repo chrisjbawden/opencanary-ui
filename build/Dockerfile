@@ -40,11 +40,6 @@ COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 
-# --- Expose ports -----------------------------------------------------------
-# 8501: Streamlit UI
-# 514/udp: optional if forwarding syslog via container's rsyslog to external
-EXPOSE 8501 514/udp
-
 # --- Entrypoint -------------------------------------------------------------
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
      
