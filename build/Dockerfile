@@ -15,6 +15,7 @@ RUN apt-get update \
           iproute2 \
           curl \
           tzdata \
+          tcpdump \
      && rm -rf /var/lib/apt/lists/*
 
 
