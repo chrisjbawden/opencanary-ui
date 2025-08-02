@@ -1,5 +1,5 @@
 # .github/workflows/docker-tagged.yml
-name: Manual Build & Push Docker Image (with custom tag)
+name: Manual Build & Push Docker Image (with custom tag & latest)
 
 on:
   workflow_dispatch:
@@ -29,4 +29,6 @@ jobs:
         with:
           context: ./build
           push: true
-          tags: chrisjbawden/opencanary-ui:${{ github.event.inputs.tag }}
+          tags: |
+            chrisjbawden/opencanary-ui:${{ github.event.inputs.tag }}
+            chrisjbawden/opencanary-ui:latest
