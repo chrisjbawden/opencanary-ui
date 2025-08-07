@@ -56,6 +56,11 @@ components.html(
         document.onclick = resetTimer;
         document.onscroll = resetTimer;
         document.onkeypress = resetTimer;
+
+        setTimeout(function() {
+            window.location.reload();
+        }, 60 * 60 * 1000);
+        
     })();
     </script>
     """,
