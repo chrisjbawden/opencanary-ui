@@ -37,8 +37,8 @@ parse_date() {
 while true; do
   # 1) Attempt to read log_expiry (days) from settings.conf
   if [[ -r "$SETTINGS_CONF" ]]; then
-    # pull from .config.log_expiry; //empty makes missing → empty string
-    LOG_EXPIRY=$(jq -r '.config.log_expiry // ""' "$SETTINGS_CONF")
+    # pull from .logman.log_expiry; //empty makes missing → empty string
+    LOG_EXPIRY=$(jq -r '.logman.log_expiry // ""' "$SETTINGS_CONF")
   else
     echo "[WARN] Cannot read $SETTINGS_CONF; skipping prune." >&2
     sleep 6h
