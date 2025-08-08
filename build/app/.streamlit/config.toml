@@ -8,7 +8,9 @@ font = "sans serif"
 
 [client]
 toolbarMode = "minimal"
-caching = false
+
+[browser]
+gatherUsageStats = false
 
 [ui]
 hideTopBar = true
