@@ -16,7 +16,7 @@ Simple GUI for the <a href="https://github.com/thinkst/opencanary" target="_blan
 
 ## Access
 
-1. If you provided a port with environment variables MA_PORT=?
+1. If you, provided a port for the management console via environment variables (MA_PORT=?)
    <br>
    1.1 Open a browser, target the host IP and the port you set in step 1.
 3. Open a browser, target the host IP with the default port 8501
