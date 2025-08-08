@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-# If /app is empty, populate it
+# If /app/settings.conf is missing, populate it with only settings.conf
 if [ -z "$(ls -A /app 2>/dev/null)" ]; then
-  echo "[init] seeding /app from image defaults"
-  cp -a /opt/streamlit/. /app/
+  echo "[init] seeding /app/settings.conf from image defaults"
+  mkdir -p /app
+  cp /opt/streamlit/settings.conf /app/
 fi
 
 # to allow for the portscan functionality within container
