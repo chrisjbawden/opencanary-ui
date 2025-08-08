@@ -17,6 +17,7 @@ RUN apt-get update \
           tzdata \
           tcpdump \
           iptables \
+          sudo \
      && rm -rf /var/lib/apt/lists/*
 
 
