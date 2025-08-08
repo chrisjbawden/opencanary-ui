@@ -9,3 +9,7 @@ font = "sans serif"
 [client]
 toolbarMode = "minimal"
 caching = false
+
+[ui]
+hideTopBar = true
+
