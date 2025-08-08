@@ -49,3 +49,7 @@ docker run -d \
 
 ```
 
+---
+
+## Disclaimer:
+This project is currently in active development and considered beta software. Features and functionality may change, and bugs or unexpected behaviour may occur. Use at your own risk. No guarantee is provided regarding stability, security, or fitness for any particular purpose.
