@@ -2,7 +2,7 @@
 set -e
 
 # If /app/settings.conf is missing, populate it with only settings.conf
-if [ -z "$(ls -A /app 2>/dev/null)" ]; then
+if [ ! -f /app/settings.conf ]; then
   echo "[init] seeding /app/settings.conf from image defaults"
   mkdir -p /app
   cp /opt/streamlit/settings.conf /app/
@@ -41,19 +41,19 @@ fi
 
 #  rsyslog watchdog script
 echo "[start] launching rsyslog watchdog script"
-bash /app/rsyslog-watcher.sh > /dev/null 2>&1 &
+bash /opt/streamlit/rsyslog-watcher.sh > /dev/null 2>&1 &
 
 # alerting script
 echo "[start] launching log alert watchdog script"
-bash /app/alert.sh > /dev/null 2>&1 &
+bash /opt/streamlit/alert.sh > /dev/null 2>&1 &
 
 # log management script
 echo "[start] log management script"
-bash /app/log_man.sh > /dev/null 2>&1 &
+bash /opt/streamlit/log_man.sh > /dev/null 2>&1 &
 
 # Start a script to patch portscan function in foreground mode but background it
 echo "[start] portscan mod"
-bash /app/portscan_patch.sh > /dev/null 2>&1 &
+bash /opt/streamlit/portscan_patch.sh > /dev/null 2>&1 &
 
 # Start OpenCanary in foreground mode but background it
 echo "[start] launching OpenCanary daemon"
@@ -68,7 +68,7 @@ echo "[entrypoint] Binding Streamlit to: $ADDRESS"
 
 # Start Streamlit in foreground so Docker stays alive
 echo "[start] launching Streamlit app on port ${PORT}"
-exec streamlit run /app/app.py \
+exec streamlit run /opt/streamlit/app.py \
      --server.headless true \
      --server.port "${PORT}" \
      --server.address "$ADDRESS"
