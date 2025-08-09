@@ -15,3 +15,6 @@ gatherUsageStats = false
 [ui]
 hideTopBar = true
 
+[server]
+fileWatcherType = "poll"
+
