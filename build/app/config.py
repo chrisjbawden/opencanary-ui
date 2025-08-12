@@ -102,7 +102,7 @@ def render_config():
         indices_to_remove = []
         for idx, entry in enumerate(ip_ignorelist_edit):
             col1, col2 = st.columns([8, 1])
-            ip_value = col1.text_input("IP:", value=entry["ip"], key=f"ip_ignore_edit_{entry['id']}, label_visibility="collapsed"")
+            ip_value = col1.text_input("IP:", value=entry["ip"], key=f"ip_ignore_edit_{entry['id']}", label_visibility="collapsed")
             if ip_value != entry["ip"]:
                 ip_ignorelist_edit[idx]["ip"] = ip_value
             with col2:
