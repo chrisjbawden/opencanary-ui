@@ -40,6 +40,7 @@ COPY app/ /opt/streamlit
 COPY app/.streamlit /opt/streamlit/.streamlit
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+RUN chmod +x /opt/streamlit/*.sh
 
 
 # --- Entrypoint -------------------------------------------------------------
