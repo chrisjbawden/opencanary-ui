@@ -18,6 +18,7 @@ RUN apt-get update \
           tcpdump \
           iptables \
           sudo \
+          tini \
      && rm -rf /var/lib/apt/lists/*
 
 
@@ -42,5 +43,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 
 # --- Entrypoint -------------------------------------------------------------
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+ENTRYPOINT ["tini","-g","--"]
+
+CMD ["/opt/streamlit/entrypoint.sh"]
      
