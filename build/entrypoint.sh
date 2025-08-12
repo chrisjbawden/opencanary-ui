@@ -1,74 +1,55 @@
 #!/usr/bin/env bash
-set -e
+set -Eeuo pipefail
 
-# If /app/settings.conf is missing, populate it with only settings.conf
+# ── Seed /app/settings.conf if missing ───────────────────────────────────────
 if [ ! -f /app/settings.conf ]; then
   echo "[init] seeding /app/settings.conf from image defaults"
   mkdir -p /app
   cp /opt/streamlit/settings.conf /app/
 fi
 
-# to allow for the portscan functionality within container
-
+# ── Allow portscan logic (you had this quirk) ────────────────────────────────
 if [ -f "/.dockerenv" ]; then
-    rm -f "/.dockerenv"
+  rm -f "/.dockerenv"
 fi
 
-# If no opencanary config yet, then create it
+# ── Ensure OpenCanary config exists ──────────────────────────────────────────
 if [ ! -f /etc/opencanaryd/opencanary.conf ]; then
   echo "[init] generating default opencanary.conf via opencanaryd"
   opencanaryd --copyconfig
-  #mkdir -p /etc/opencanaryd
-  #cp opencanary.conf /etc/opencanaryd/opencanary.conf
-  jq '.["vnc.port"] = 11111' /etc/opencanaryd/opencanary.conf > tmpconf
-  mv tmpconf /etc/opencanaryd/opencanary.conf
+  jq '.["vnc.port"] = 11111' /etc/opencanaryd/opencanary.conf > /tmp/tmpconf
+  mv /tmp/tmpconf /etc/opencanaryd/opencanary.conf
 fi
 
-# rsyslog config: if user‐provided exists, install & restart; else stop rsyslog
+# ── Optional custom rsyslog config ───────────────────────────────────────────
 if [ -f /app/rsyslog-opencanary.conf ]; then
   echo "[init] custom rsyslog config found, installing"
   cp /app/rsyslog-opencanary.conf /etc/rsyslog.d/opencanary.conf
-
   echo "[init] starting rsyslog"
   if command -v systemctl >/dev/null; then
-    systemctl restart rsyslog
+    systemctl restart rsyslog || true
   elif command -v service >/dev/null; then
-    service rsyslog restart
+    service rsyslog restart || true
   else
-    rsyslogd
+    rsyslogd || true
   fi
 fi
 
-#  rsyslog watchdog script
-echo "[start] launching rsyslog watchdog script"
-bash /opt/streamlit/rsyslog-watcher.sh > /dev/null 2>&1 &
+# ── Start helper scripts in background (tini will reap) ──────────────────────
+[ -x /opt/streamlit/rsyslog-watcher.sh ] && /opt/streamlit/rsyslog-watcher.sh >/dev/null 2>&1 &
+[ -x /opt/streamlit/alert.sh ]           && /opt/streamlit/alert.sh           >/dev/null 2>&1 &
+[ -x /opt/streamlit/log_man.sh ]         && /opt/streamlit/log_man.sh         >/dev/null 2>&1 &
+[ -x /opt/streamlit/portscan_patch.sh ]  && /opt/streamlit/portscan_patch.sh  >/dev/null 2>&1 &
 
-# alerting script
-echo "[start] launching log alert watchdog script"
-bash /opt/streamlit/alert.sh > /dev/null 2>&1 &
+# ── Start OpenCanary in background ───────────────────────────────────────────
+opencanaryd --start -f >/dev/null 2>&1 &
 
-# log management script
-echo "[start] log management script"
-bash /opt/streamlit/log_man.sh > /dev/null 2>&1 &
-
-# Start a script to patch portscan function in foreground mode but background it
-echo "[start] portscan mod"
-bash /opt/streamlit/portscan_patch.sh > /dev/null 2>&1 &
-
-# Start OpenCanary in foreground mode but background it
-echo "[start] launching OpenCanary daemon"
-opencanaryd --start -f > /dev/null 2>&1 &
-
-# Determine port from env or default to 8501
+# ── Streamlit in foreground (container stays alive) ──────────────────────────
 PORT="${MA_PORT:-8501}"
-
-# Pick bind address: use BIND_ADDR if provided, else 0.0.0.0
 ADDRESS="${BIND_ADDR:-0.0.0.0}"
-echo "[entrypoint] Binding Streamlit to: $ADDRESS"
+echo "[entrypoint] Binding Streamlit to: ${ADDRESS}, port ${PORT}"
 
-# Start Streamlit in foreground so Docker stays alive
-echo "[start] launching Streamlit app on port ${PORT}"
 exec streamlit run /opt/streamlit/app.py \
-     --server.headless true \
-     --server.port "${PORT}" \
-     --server.address "$ADDRESS"
+  --server.headless true \
+  --server.port "${PORT}" \
+  --server.address "${ADDRESS}"
