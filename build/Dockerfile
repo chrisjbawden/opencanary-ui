@@ -46,5 +46,5 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["tini","-g","--"]
 
-CMD ["/opt/streamlit/entrypoint.sh"]
+CMD ["/usr/local/bin/entrypoint.sh"]
      
