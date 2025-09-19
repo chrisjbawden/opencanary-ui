@@ -35,7 +35,7 @@ components.html(
       #MainMenu { display: none !important; }
     </style>
     """,
-    height=0,
+    height=1,
 )
 
 # ─── Auto-refresh on 5 min inactivity (JS) ───────────────────────────────────
@@ -64,7 +64,7 @@ components.html(
     })();
     </script>
     """,
-    height=0,
+    height=1,
 )
 
 # ─── Credentials & Login ─────────────────────────────────────────────────────
