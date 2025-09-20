@@ -1,6 +1,6 @@
 
 
-<div align="center" > <p> # Opencanary Project </p></div>
+<div align="center"><h1> <storng> Opencanary Project </strong></h1></div>
 
 Simple GUI for the <a href="https://github.com/thinkst/opencanary" target="_blank">opencanary project</a>.
 
