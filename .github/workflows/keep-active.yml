@@ -1,0 +1,22 @@
+name: Keep Actions Alive
+
+on:
+  schedule:
+    - cron: "0 0 1 * *"
+  workflow_dispatch: 
+
+permissions:
+  contents: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create empty commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit --allow-empty -m "Keepalive commit"
+          git push
